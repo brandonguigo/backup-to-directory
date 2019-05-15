@@ -14,7 +14,7 @@ for f in $originPath/*; do #for all entry in the directory
         if [[ -d $f ]]; then #if it's a directory
             if [[ ! -f "$backupPath"/"$filename.zip"  ]] #if it doesn't exists
             then
-                echo "$f : No backup found  ==> First backup"
+                echo -e "$f : \033[1;93mNo backup found  ==> First backup\033[0m"
                 $zipingTool -r "$backupPath"/"$filename.zip" $f/ #first backup
             else
                 #dateModifCourant=$(stat -f "%m" "$f") #get last modification date from the current file to backup
@@ -22,16 +22,16 @@ for f in $originPath/*; do #for all entry in the directory
                 dateModifSauvegarde=$(stat -f "%m" "$backupPath/$filename.zip") #get last modification date from the backup file
                 if [ $dateModifCourant -ge $dateModifSauvegarde ]; #if the file has been modified since
                 then
-                    echo "$f : Backup file is older ==> Updating the backup"
+                    echo -e "$f : \033[1;93mBackup file is older ==> Updating the backup\033[0m"
                     $zipingTool -r "$backupPath/$filename.zip" "$f/" #backup
                 else
-                    echo "$f : Backup up-to-date ==> Nothing to do"
+                    echo -e "$f : \033[1;92mBackup up-to-date ==> Nothing to do\033[0m"
                 fi
             fi
         elif [[ -f $f ]]; then #if it's a file
             if [[ ! -f "$backupPath/$filename" ]] #if the backup doesn't exists
             then
-                echo "$f : No backup found  ==> First backup"
+                echo -e "$f : \033[1;93mNo backup found  ==> First backup\033[39m"
                 cp "$f" "$backupPath" #backup
             else
                 #dateModifCourant=$(stat -f "%m" "$f") #get the last modification date from the current file to backup
@@ -39,10 +39,10 @@ for f in $originPath/*; do #for all entry in the directory
                 dateModifSauvegarde=$(stat -f "%m" "$backupPath/$filename") # get the modification date from the backup file
                 if [ $dateModifCourant -ge $dateModifSauvegarde ]; #if the file has been modified since
                 then
-                    echo "$f : Backup file is older ==> Updating the backup"
+                    echo -e "$f : \033[1;93mBackup file is older ==> Updating the backup\033[0m"
                     cp "$f" "$backupPath" #backup
                 else
-                    echo "$f : Backup up-to-date ==> Nothing to do"
+                    echo -e "$f : \033[1;92mBackup up-to-date ==> Nothing to do\033[0m"
                 fi
             fi
         else
@@ -58,7 +58,9 @@ for f in "$backupPath"/*; do #checking if a file was deleted from directory
 
     if [[ ! -f $originPath/$filename ]] && [[ ! -d $originPath/$filenameWithoutExt ]] #if neither a file or a directory match something in the origin directory, delete in backup
     then
-        echo "$originPath/$filename : Deleted ==> updating backup"
+        echo -e "$originPath/$filename : \033[1;91mDeleted ==> updating backup\033[0m"
         rm -rf "$f"
     fi
 done
+
+echo -e "\033[30;48;5;82m Backup Successful ! \033[0m"
